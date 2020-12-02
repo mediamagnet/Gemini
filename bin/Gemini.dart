@@ -9,6 +9,7 @@ import 'utils.dart' as utils;
 
 
 var ownerID;
+var secOwner;
 var prefix;
 
 Future main(List<String> arguments) async {
@@ -17,7 +18,8 @@ Future main(List<String> arguments) async {
   try {
     cfg = await loadConfig('config.toml');
     print(cfg['Bot']['ID']);
-    ownerID = cfg['Owner']['ID'];
+    ownerID = cfg['Owner']['ID'][0];
+    secOwner = cfg['Owner']['ID'][1];
     prefix = cfg['Bot']['Prefix'];
 
     final bot = Nyxx(cfg['Bot']['Token']!);
@@ -36,6 +38,8 @@ Future main(List<String> arguments) async {
     });
 
     Commander(bot, prefix: cfg['Bot']['Prefix'])
+      ..registerCommandGroup(CommandGroup(beforeHandler: checkForAdmin)
+        ..registerSubCommand('shutdown', shutdownCommand))
       ..registerCommand('ping', pingCommand)
       ..registerCommand('dinfo', dinfoCommand)
       ..registerCommand('help', helpCommand);
@@ -54,7 +58,7 @@ Future<void> dinfoCommand(CommandContext ctx, String content) async {
     ..addAuthor((author) {
       author.name = ctx.client.self.tag;
       author.iconUrl = ctx.client.self.avatarURL();
-      author.url = 'https://github.com/mediamagnet/cerys';
+      author.url = 'https://github.com/mediamagnet/gemini-dart';
     })
     ..addFooter((footer) {
       footer.text =
@@ -98,6 +102,14 @@ Future<void> dinfoCommand(CommandContext ctx, String content) async {
   await ctx.reply(embed: embed);
 }
 
+Future<void> shutdownCommand(CommandContext ctx, String content) async {
+  await ctx.message.delete();
+  await ctx.reply(content: 'I...');
+  sleep(Duration(seconds: 5));
+  await ctx.reply(content: 'I guess I can... bye.');
+  Process.killPid(pid);
+}
+
 Future<void> helpCommand(CommandContext ctx, String content) async {
   final color = DiscordColor.fromRgb(
       Random().nextInt(255), Random().nextInt(255), Random().nextInt(255));
@@ -107,7 +119,7 @@ Future<void> helpCommand(CommandContext ctx, String content) async {
     ..addAuthor((author) {
       author.name = ctx.client.self.tag;
       author.iconUrl = ctx.client.self.avatarURL();
-      author.url = 'https://github.com/mediamagnet/cerys';
+      author.url = 'https://github.com/mediamagnet/gemini-dart';
     })
     ..addFooter((footer) {
       footer.text =
@@ -157,8 +169,9 @@ Future<void> pingCommand(CommandContext ctx, String content) async {
 Future<bool> checkForAdmin(CommandContext context) async {
   if (ownerID != null) {
     return context.author!.id == ownerID;
+  } else if (secOwner != null) {
+    return context.author!.id == secOwner;
   }
-
   return false;
 }
 
