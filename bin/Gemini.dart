@@ -28,6 +28,12 @@ Future main(List<String> arguments) async {
       if (e.message.content.contains('<@!783065070682243082>')) {
         print(e.message.content);
         e.message.createReaction(UnicodeEmoji('❤'));
+      } else if (e.message.content.contains('Good bot')) {
+        print(e.message.content);
+        e.message.createReaction(UnicodeEmoji('❤'));
+      } else if (e.message.content.contains('Bad bot')) {
+        print(e.message.content);
+        e.message.createReaction(UnicodeEmoji('🗡'));
       }
     });
     bot.onReady.listen((ReadyEvent e) {
