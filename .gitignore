@@ -1,11 +1,16 @@
-# Files and directories created by pub
-.dart_tool/
-.packages
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
 
-# Conventional directory for build outputs
-build/
+# Test binary, build with `go test -c`
+*.test
 
-# Directory created by dartdoc
-doc/api/
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+.idea/
+server
 
 config.toml
