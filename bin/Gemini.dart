@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:math' show Random;
 import 'dart:io' show Process, ProcessInfo, pid, sleep;
 import 'utils.dart' as utils;
+import 'rolecmd.dart' as role;
 
 
 var ownerID;
@@ -48,7 +49,9 @@ Future main(List<String> arguments) async {
         ..registerSubCommand('shutdown', shutdownCommand))
       ..registerCommand('ping', pingCommand)
       ..registerCommand('dinfo', dinfoCommand)
-      ..registerCommand('help', helpCommand);
+      ..registerCommand('help', helpCommand)
+      ..registerCommandGroup(CommandGroup(name: 'role')
+        ..registerSubCommand('add', role.addCommand));
 
   } catch (e) {
     print(e);
