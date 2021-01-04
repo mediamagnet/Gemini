@@ -1,13 +1,12 @@
 package lib
 
-import "log"
-
-package lib
-
 import (
-"context"
+	"Gemini/config"
+	"context"
 "fmt"
-"log"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"log"
 
 "go.mongodb.org/mongo-driver/bson"
 "go.mongodb.org/mongo-driver/mongo"
@@ -20,14 +19,34 @@ var err error
 type Role struct {
 	GuildID   string `bson:"GuildID,omitempty"`
 	ChannelID string `bson:"ChannelID,omitempty"`
-	RoleID    string `bson:"RoleID,omitempty"`
+	RoleIDs    []string `bson:"RoleIDs,omitempty"`
 	IgnoreID  string `bson:"IgnoreID,omitempty"`
 	Phrase    string `bson:"Phrase,omitempty"`
+	Message   string `bson:"Message,omitempty"`
+	Reaction  string `bson:"Reaction,omitempty"`
 }
 
 // GetClient blah
 func GetClient() *mongo.Client {
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	viper.SetConfigName("config")
+	viper.SetConfigType("toml")
+	viper.AddConfigPath(".")
+
+	var cfg config.Configuration
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Fatalf("Error reading config file, %s", err)
+	}
+	err := viper.Unmarshal(&cfg)
+	if err != nil {
+		logrus.Fatalf("unable to decode into struct, %v", err)
+	}
+
+	mongoURL :=
+		fmt.Sprintf("mongodb+srv://%v:%v@gemini.hjehy.mongodb.net/%v?retryWrites=true&w=majority",
+		cfg.Mongo.DB_User, cfg.Mongo.DB_Pass, "gemini")
+	fmt.Println(mongoURL)
+	clientOptions := options.Client().ApplyURI(mongoURL)
 
 	client, err := mongo.NewClient(clientOptions)
 	if err != nil {

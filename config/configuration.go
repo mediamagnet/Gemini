@@ -1,6 +1,8 @@
 package config
 
 type Configuration struct {
-	Bot BotConfiguration
+	Bot   BotConfiguration
+	Mongo MongoConfiguration
 	Owner OwnerConfiguration
+	AVWX  AVWXConfiguration
 }

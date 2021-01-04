@@ -1,0 +1,2 @@
+# Gemini/commands
+commands\role.go:24:6: unknown field 'RoleID' in struct literal of type lib.Role
