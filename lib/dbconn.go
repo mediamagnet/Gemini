@@ -43,8 +43,8 @@ func GetClient() *mongo.Client {
 	}
 
 	mongoURL :=
-		fmt.Sprintf("mongodb+srv://%v:%v@gemini.hjehy.mongodb.net/%v?retryWrites=true&w=majority",
-		cfg.Mongo.DB_User, cfg.Mongo.DB_Pass, "gemini")
+		fmt.Sprintf("mongodb+srv://%v:%v@%v/%v?retryWrites=true&w=majority",
+		cfg.Mongo.DB_User, cfg.Mongo.DB_Pass, cfg.Mongo.DB_URL, "gemini")
 	fmt.Println(mongoURL)
 	clientOptions := options.Client().ApplyURI(mongoURL)
 
