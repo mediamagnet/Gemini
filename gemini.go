@@ -25,7 +25,6 @@ var log = &logrus.Logger{
 var Prefix string
 
 func main() {
-
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(".")
@@ -72,11 +71,17 @@ func connect(s *discordgo.Session, c *discordgo.Connect) {
 		guildName = append(guildName, v.Name)
 	}
 	for {
-		err := s.UpdateListeningStatus("cosmic background radiation")
+		err := s.UpdateListeningStatus(lib.Prefix()+"help")
+		if err != nil {
+			fmt.Println(err)
+		}
 		time.Sleep(15 * time.Minute)
 		err = s.UpdateStatus(0, "Gemini v0.0.1")
+		if err != nil {
+			fmt.Println(err)
+		}
 		time.Sleep(15 * time.Minute)
-		err = s.UpdateListeningStatus(".help")
+		err = s.UpdateListeningStatus("cosmic background radiation")
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -90,11 +95,13 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 	switch {
-	case lib.ComesFromDM(s, m) == false:
+	case !lib.ComesFromDM(s, m):
 		commands.HelpCommand(s, m)
 		commands.CleanupCommand(s, m)
+		commands.InfoCommand(s, m)
 		commands.RoleCommand(s, m)
-	case lib.ComesFromDM(s, m) == true && m.Author.ID == "108344508940316672":
+
+	case lib.ComesFromDM(s, m) && m.Author.ID == "108344508940316672":
 		log.Printf("It works Prefix is: %s", Prefix)
 	default:
 		log.Println("It's a DM")

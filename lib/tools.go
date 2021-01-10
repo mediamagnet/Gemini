@@ -1,13 +1,10 @@
 package lib
 
 import (
+	"Gemini/commands"
 	"Gemini/config"
-	"crypto/rand"
-	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/AvraamMavridis/randomcolor"
-	"github.com/andersfylling/disgord"
 	"github.com/bwmarrin/discordgo"
 	"github.com/enriquebris/goconcurrentqueue"
 	"github.com/jonas747/dca"
@@ -21,7 +18,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//Prefix is the bots prefix for commands
+// Prefix is the bots prefix for commands
 func Prefix() string {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
@@ -39,18 +36,6 @@ func Prefix() string {
 	return cfg.Bot.Prefix
 }
 
-// NoArtistURL default avatar
-var NoArtistURL = "https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png"
-
-// GenAvatarURL generates a URL used to get a user avatar.
-func GenAvatarURL(user *disgord.User) string {
-	if user.Avatar == "" {
-		return NoArtistURL
-	}
-
-	return fmt.Sprintf("https://cdn.discordapp.com/avatars/%s/%s.webp", user.ID.String(), user.Avatar)
-}
-
 func VoiceChannels(s *discordgo.Session, guildID string) []string {
 	channels, _ := s.GuildChannels(guildID)
 	chanSlice := make([]string, 1)
@@ -62,30 +47,26 @@ func VoiceChannels(s *discordgo.Session, guildID string) []string {
 	}
 	return chanSlice
 }
-//UnquoteCodePoint unicode to rune
+
+// UnquoteCodePoint unicode to rune
 func UnquoteCodePoint(s string) (rune, error) {
 	// 16 specifies hex encoding
 	// 32 is size in bits of the rune type
 	r, err := strconv.ParseInt(strings.TrimPrefix(s, "\\U"), 16, 32)
 	return rune(r), err
 }
-//RandomHex gives random hex codes
-func RandomHex(n int) (string, error) {
-	bytes := make([]byte, n)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
-}
 
-//ColorToInt gives color in int
-func ColorToInt() int {
-	color := randomcolor.GetRandomColorInHex()
-	color1, err := strconv.ParseInt(color, 8, 64)
-	if err != nil {
-		logrus.Errorln(err)
+func HelpBuilder(command *commands.CommandHelp) discordgo.MessageEmbedField {
+	cname 	:= command.Name
+	cuse 	:= command.Usage
+	cdesc 	:= command.Description
+	cadmin 	:= command.Admin
+
+	return discordgo.MessageEmbedField{
+		Name: cname,
+		Value: fmt.Sprintf("%v, `%v`, Requires Privs: %v", cuse, cdesc, cadmin),
+		}
 	}
-	return int(color1)
 }
 
 func ChannelIDFromName(s *discordgo.Session, guildID string, channelName string) string {

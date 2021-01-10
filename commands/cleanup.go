@@ -7,7 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -17,7 +16,7 @@ var log = &logrus.Logger{
 	Hooks:     make(logrus.LevelHooks),
 	Level:     logrus.InfoLevel,
 }
-var wg sync.WaitGroup
+// var wg sync.WaitGroup
 
 //CleanupCommand provides channel purge functionality
 func CleanupCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -30,7 +29,7 @@ func CleanupCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			_, _ = s.ChannelMessageSend(m.ChannelID, "Deleting messages in <#"+m.ChannelID+">")
 			if delCount == 0 {
 				time.Sleep(3 * time.Second)
-				wg.Add(100)
+				// wg.Add(100)
 				log.Println("Cleanup Requested")
 				for i := 0; i < 1000; i++ {
 					messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", "")
@@ -39,13 +38,13 @@ func CleanupCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 					}
 					// fmt.Println(messages[0].ID)
 					println(i)
-					time.Sleep(500 * time.Millisecond)
+					time.Sleep(250 * time.Millisecond)
 					_ = s.ChannelMessageDelete(m.ChannelID, messages[0].ID)
 					log.Println("done cleaning", i)
 				}
 			} else {
 				time.Sleep(3 * time.Second)
-				wg.Add(100)
+				// wg.Add(100)
 				log.Println("Cleanup Requested")
 				for i := 0; i < delCount+1; i++ {
 					messages, _ := s.ChannelMessages(m.ChannelID, 1, "", "", "")
@@ -53,7 +52,7 @@ func CleanupCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 						break
 					}
 					log.Println(messages[0].ID)
-					time.Sleep(500 * time.Millisecond)
+					time.Sleep(250 * time.Millisecond)
 					_ = s.ChannelMessageDelete(m.ChannelID, messages[0].ID)
 					log.Println("done cleaning", i)
 				}

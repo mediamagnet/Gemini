@@ -17,13 +17,17 @@ var err error
 
 // Role blah
 type Role struct {
-	GuildID   string `bson:"GuildID,omitempty"`
-	ChannelID string `bson:"ChannelID,omitempty"`
-	RoleIDs    []string `bson:"RoleIDs,omitempty"`
-	IgnoreID  string `bson:"IgnoreID,omitempty"`
-	Phrase    string `bson:"Phrase,omitempty"`
-	Message   string `bson:"Message,omitempty"`
-	Reaction  string `bson:"Reaction,omitempty"`
+	GuildID   string `bson:"GuildID,omitempty"` // GuildID to watch in
+	ChannelID string `bson:"ChannelID,omitempty"` // ChannelID for where to watch for Phrase
+	RoleID	  string `bson:"RoleID,omitempty"` // RoleID to assign
+	IgnoreID  string `bson:"IgnoreID,omitempty"` // IgnoreID ignore this role when logging in/ logging out
+	Phrase    string `bson:"Phrase,omitempty"` // Phrase to watch for to assign role
+}
+
+type User struct {
+	UserID string `bson:"UserID,omitempty"`
+	GuildID string `bson:"GuildID,omitempty"`
+	RoleIDs []string `bson:"RoleIDs,omitempty"`
 }
 
 // GetClient blah
@@ -44,7 +48,7 @@ func GetClient() *mongo.Client {
 
 	mongoURL :=
 		fmt.Sprintf("mongodb+srv://%v:%v@%v/%v?retryWrites=true&w=majority",
-		cfg.Mongo.DB_User, cfg.Mongo.DB_Pass, cfg.Mongo.DB_URL, "gemini")
+		cfg.Mongo.DB_User, cfg.Mongo.DB_Pass, cfg.Mongo.DB_URL, cfg.Mongo.DB)
 	fmt.Println(mongoURL)
 	clientOptions := options.Client().ApplyURI(mongoURL)
 
@@ -59,8 +63,8 @@ func GetClient() *mongo.Client {
 	return client
 }
 
-// MonRole mongoDB connection stuff
-func MonRole(dbase string, collect string, listens Role) {
+// MonRecord mongoDB connection stuff
+func MonRecord(dbase string, collect string, listens Role) {
 	// Connecting to mongoDB
 	client := GetClient()
 	err = client.Ping(context.TODO(), nil)
@@ -75,9 +79,18 @@ func MonRole(dbase string, collect string, listens Role) {
 	fmt.Println("Inserted:", insertResult.InsertedID)
 }
 
-// MonUpdateRole blah
-func MonUpdateRole(client *mongo.Client, updatedData bson.M, filter bson.M) int64 {
-	collection := client.Database("gemini").Collection("roles")
+func MonDeleteRecord(client *mongo.Client, filter bson.M, dbase string, collect string) int64 {
+	collection := client.Database(dbase).Collection(collect)
+	deleteResult, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		log.Fatal("Error deleting Record", err)
+	}
+	return deleteResult.DeletedCount
+}
+
+// MonUpdateRecord blah
+func MonUpdateRecord(client *mongo.Client, updatedData bson.M, filter bson.M, dbase string, collect string) int64 {
+	collection := client.Database(dbase).Collection(collect)
 	update := bson.D{{Key: "$set", Value: updatedData}}
 	updatedResult, err := collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
@@ -86,19 +99,19 @@ func MonUpdateRole(client *mongo.Client, updatedData bson.M, filter bson.M) int6
 	return updatedResult.ModifiedCount
 }
 
-// MonReturnOneRole blah
-func MonReturnOneRole(client *mongo.Client, filter bson.M) Role {
+// MonReturnOneRecord blah
+func MonReturnOneRecord(client *mongo.Client, filter bson.M, dbase string, collect string) Role {
 	var phrase Role
-	collection := client.Database("gemini").Collection("roles")
+	collection := client.Database(dbase).Collection(collect)
 	documentReturned := collection.FindOne(context.TODO(), filter)
 	documentReturned.Decode(&phrase)
 	return phrase
 }
 
-// MonReturnAllRole blah
-func MonReturnAllRole(client *mongo.Client, filter bson.M) []*Role {
+// MonReturnAllRecords blah
+func MonReturnAllRecords(client *mongo.Client, filter bson.M, dbase string, collect string) []*Role {
 	var roles []*Role
-	collection := client.Database("gemini").Collection("roles")
+	collection := client.Database(dbase).Collection(collect)
 	cur, err := collection.Find(context.TODO(), filter)
 	if err != nil {
 		log.Fatal("Error finding all the things", err)
