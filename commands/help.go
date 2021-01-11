@@ -25,7 +25,13 @@ func HelpCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 				Color:       0x0047AB,
 				Description: "Welcome to the Gemini, Here's some useful commands: \n",
 				Fields: []*discordgo.MessageEmbedField{
-					{Name: ".command", Value: "Help text here"},
+					{Name: lib.Prefix()+"help", Value: "You're reading it."},
+					{Name: lib.Prefix()+"role", Value: "Various commands for managing roles."},
+					{Name: lib.Prefix()+"ping", Value: "Get ping time between Gemini and other parts of the bot."},
+					{Name: lib.Prefix()+"info", Value: "Get info about this half of the bot."},
+					{Name: lib.Prefix()+"register", Value: "(Pending), register your assigned roles with the bot"},
+					{Name: lib.Prefix()+"login", Value: "(Pending), login to your roles for pings"},
+					{Name: lib.Prefix()+"logout", Value: "(Pending), logout of your roles."},
 				},
 				Footer: &discordgo.MessageEmbedFooter{
 					Text:    "Gemini: the other half of the battle.",
