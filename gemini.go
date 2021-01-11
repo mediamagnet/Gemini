@@ -131,6 +131,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		commands.InfoCommand(s, m)
 		commands.RoleCommand(s, m)
 		commands.InOutCommand(s, m)
+		commands.PingCommand(s, m)
 
 	case lib.ComesFromDM(s, m) && m.Author.ID == "108344508940316672":
 		log.Printf("It works Prefix is: %s", Prefix)

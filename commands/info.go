@@ -37,7 +37,6 @@ func InfoCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 				{Name: "Discord-Go Version", Value: discordgo.VERSION, Inline: true},
 				{Name: "API version", Value: discordgo.APIVersion},
 				{Name: "Shards", Value: strconv.Itoa(s.ShardCount), Inline: true},
-
 			},
 			Footer: &discordgo.MessageEmbedFooter{
 				Text:    "Gemini: the other half of the battle.",
