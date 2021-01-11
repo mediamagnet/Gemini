@@ -12,5 +12,6 @@
 *.out
 .idea/
 server
+./tmp
 
 config.toml

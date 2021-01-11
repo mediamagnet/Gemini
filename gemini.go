@@ -75,17 +75,47 @@ func connect(s *discordgo.Session, c *discordgo.Connect) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		time.Sleep(15 * time.Minute)
-		err = s.UpdateStatus(0, "Gemini v0.0.1")
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateListeningStatus("The voices in their head")
 		if err != nil {
 			fmt.Println(err)
 		}
-		time.Sleep(15 * time.Minute)
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateListeningStatus("radio.tas.bot")
+		if err != nil {
+			fmt.Println(err)
+		}
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateListeningStatus("smooth jazz")
+		if err != nil {
+			fmt.Println(err)
+		}
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateStatus(0, "Gemini v0.0.5")
+		if err != nil {
+			fmt.Println(err)
+		}
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateStatus(0, "with corgis")
+		if err != nil {
+			fmt.Println(err)
+		}
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateStatus(0, "with all the buttons.")
+		if err != nil {
+			fmt.Println(err)
+		}
+		time.Sleep(5 * time.Minute)
+		err = s.UpdateStatus(0, "electric boogaloo")
+		if err != nil {
+			fmt.Println(err)
+		}
+		time.Sleep(5 * time.Minute)
 		err = s.UpdateListeningStatus("cosmic background radiation")
 		if err != nil {
 			fmt.Println(err)
 		}
-		time.Sleep(15 * time.Minute)
+		time.Sleep(5 * time.Minute)
 	}
 }
 
@@ -100,6 +130,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		commands.CleanupCommand(s, m)
 		commands.InfoCommand(s, m)
 		commands.RoleCommand(s, m)
+		commands.InOutCommand(s, m)
 
 	case lib.ComesFromDM(s, m) && m.Author.ID == "108344508940316672":
 		log.Printf("It works Prefix is: %s", Prefix)

@@ -49,7 +49,6 @@ func GetClient() *mongo.Client {
 	mongoURL :=
 		fmt.Sprintf("mongodb+srv://%v:%v@%v/%v?retryWrites=true&w=majority",
 		cfg.Mongo.DB_User, cfg.Mongo.DB_Pass, cfg.Mongo.DB_URL, cfg.Mongo.DB)
-	fmt.Println(mongoURL)
 	clientOptions := options.Client().ApplyURI(mongoURL)
 
 	client, err := mongo.NewClient(clientOptions)
@@ -65,6 +64,22 @@ func GetClient() *mongo.Client {
 
 // MonRecord mongoDB connection stuff
 func MonRecord(dbase string, collect string, listens Role) {
+	// Connecting to mongoDB
+	client := GetClient()
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal("Couldn't connect to the database", err)
+	}
+	collection := client.Database(dbase).Collection(collect)
+	insertResult, err := collection.InsertOne(context.TODO(), listens)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted:", insertResult.InsertedID)
+}
+
+// MonUser mongoDB connection stuff
+func MonUser(dbase string, collect string, listens User) {
 	// Connecting to mongoDB
 	client := GetClient()
 	err = client.Ping(context.TODO(), nil)

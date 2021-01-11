@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-
+//nolint:funlen
 func RoleCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	msg := m.Content
 	if strings.HasPrefix(m.Content, lib.Prefix()+"role") {

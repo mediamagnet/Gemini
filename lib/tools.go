@@ -1,7 +1,7 @@
 package lib
 
 import (
-	"Gemini/commands"
+
 	"Gemini/config"
 	"errors"
 	"fmt"
@@ -54,19 +54,6 @@ func UnquoteCodePoint(s string) (rune, error) {
 	// 32 is size in bits of the rune type
 	r, err := strconv.ParseInt(strings.TrimPrefix(s, "\\U"), 16, 32)
 	return rune(r), err
-}
-
-func HelpBuilder(command *commands.CommandHelp) discordgo.MessageEmbedField {
-	cname 	:= command.Name
-	cuse 	:= command.Usage
-	cdesc 	:= command.Description
-	cadmin 	:= command.Admin
-
-	return discordgo.MessageEmbedField{
-		Name: cname,
-		Value: fmt.Sprintf("%v, `%v`, Requires Privs: %v", cuse, cdesc, cadmin),
-		}
-	}
 }
 
 func ChannelIDFromName(s *discordgo.Session, guildID string, channelName string) string {
