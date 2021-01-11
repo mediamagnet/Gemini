@@ -24,15 +24,24 @@ func PingCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if err != nil {
 		logrus.Fatalf("unable to decode into struct, %v", err)
 	}
-	msg := m.Content
-	if strings.HasPrefix(msg, lib.Prefix()+"ping") {
+	// msg := m.Content
+	if strings.Contains(m.Content, lib.Prefix()+"ping") {
 		err := s.ChannelMessageDelete(m.ChannelID, m.ID)
 		if err != nil {
-			log.Errorln(err)
+			log.Warnln(err)
 		}
-		disping, _ := ping.NewPinger("discord.com")
-		monping, _ := ping.NewPinger("gemini-shard-00-02.hjehy.mongodb.net")
-		gemping, _ := ping.NewPinger("geminibot.xyz")
+		disping, err := ping.NewPinger("www.discord.com")
+		if err != nil {
+			log.Errorf("b %v", err)
+		}
+		monping, err := ping.NewPinger("gemini-shard-00-02.hjehy.mongodb.net")
+		if err != nil {
+			log.Errorf("c %v", err)
+		}
+		gemping, err := ping.NewPinger("geminibot.xyz")
+		if err != nil {
+			log.Errorf("a %v", err)
+		}
 
 /*		msg1, _ := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 			Fields: []*discordgo.MessageEmbedField{
@@ -42,18 +51,32 @@ func PingCommand(s *discordgo.Session, m *discordgo.MessageCreate) {
 			},
 		})*/
 
+		disping.SetPrivileged(true)
+		monping.SetPrivileged(true)
+		gemping.SetPrivileged(true)
+
 		disping.Count = 3
 		monping.Count = 3
 		gemping.Count = 3
-		_ = disping.Run()
-		_ = monping.Run()
-		_ = gemping.Run()
-		disStats := disping.Statistics()
-		monStats := monping.Statistics()
-		gemStats := gemping.Statistics()
-		log.Infoln(disStats)
-		log.Infoln(monStats)
-		log.Infoln(gemStats)
+
+		err = disping.Run()
+		if err != nil {
+			log.Errorf("d %v", err)
+		}
+		err = monping.Run()
+		if err != nil {
+			log.Errorf("e %v", err)
+		}
+		err = gemping.Run()
+		if err != nil {
+			log.Errorf("f %v", err)
+		}
+		// disStats := disping.Statistics()
+		// monStats := monping.Statistics()
+		// gemStats := gemping.Statistics()
+		log.Infof("a, %v", disping.Statistics())
+		log.Infof("b, %v", monping.Statistics())
+		log.Infof("c, %v", gemping.Statistics())
 
 /*		_, _ = s.ChannelMessageEditEmbed(m.ChannelID, msg1.ID, &discordgo.MessageEmbed{
 			Fields: []*discordgo.MessageEmbedField{
